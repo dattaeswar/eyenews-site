@@ -63,6 +63,34 @@ node scripts/extract-colors.mjs   # raw node-vibrant swatches from public/brand/
 node scripts/build-palette.mjs    # full 50-950 scale + contrast report
 ```
 
+## Adding a Featured Poster to the homepage
+
+The "From the desk" section on the homepage (below the gallery) is driven by
+[`content/posters.json`](content/posters.json) — no CMS, no login, no database. To add one:
+
+1. Drop the image into `public/posters/` (a portrait/4:5-ish crop looks best).
+2. Add an entry to `content/posters.json`:
+
+```json
+{
+  "title": "Headline shown on the poster card",
+  "image": "/posters/my-poster.jpg",
+  "href": "https://example.com/the-article-or-post-this-links-to",
+  "addedAt": "2026-08-22"
+}
+```
+
+3. Push/redeploy. The section is hidden entirely when the array is empty, and posters are
+   sorted newest-first by `addedAt`. Set `"active": false` on an entry to hide it without
+   deleting it.
+
+## Gallery photos
+
+The "Field & campaign moments" section on the homepage reads from
+[`src/components/GalleryGrid.tsx`](src/components/GalleryGrid.tsx), which lists each photo's
+file path plus its intrinsic width/height (needed by `next/image` to avoid layout shift). To
+add a photo: drop the file in `public/gallery/` and add a matching entry to the `PHOTOS` array.
+
 ## News Pulse sources
 
 Feed list lives in [`src/lib/news/sources.ts`](src/lib/news/sources.ts). A few outlets named in

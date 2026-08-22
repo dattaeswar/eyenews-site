@@ -1,9 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import FadeIn from "@/components/FadeIn";
+import FeaturedPosters from "@/components/FeaturedPosters";
+import GalleryGrid from "@/components/GalleryGrid";
 import InsightCard from "@/components/InsightCard";
+import LivePill from "@/components/LivePill";
 import NewsPulsePanel from "@/components/NewsPulsePanel";
+import TiltLogo from "@/components/TiltLogo";
 import { getAllInsights } from "@/lib/insights";
 import { SERVICES, SITE } from "@/lib/site-data";
 
@@ -43,16 +46,8 @@ export default function Home() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.15} className="relative mx-auto hidden w-full max-w-xs lg:block">
-            <div className="absolute -inset-6 rounded-full bg-white/5 blur-2xl" aria-hidden />
-            <Image
-              src="/brand/logo-mark.png"
-              alt={`${SITE.brandName} emblem`}
-              width={420}
-              height={420}
-              className="relative"
-              priority
-            />
+          <FadeIn delay={0.15} className="hidden lg:block">
+            <TiltLogo src="/brand/logo-mark.png" alt={`${SITE.brandName} emblem`} />
           </FadeIn>
         </div>
 
@@ -92,6 +87,25 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {/* Gallery */}
+      <section className="border-t border-neutral-200 py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <FadeIn>
+            <p className="text-sm font-semibold uppercase tracking-wide text-accent-600">
+              On the ground
+            </p>
+            <h2 className="mt-2 font-serif text-3xl font-semibold text-primary-900 sm:text-4xl">
+              Field &amp; campaign moments
+            </h2>
+          </FadeIn>
+          <div className="mt-10">
+            <GalleryGrid />
+          </div>
+        </div>
+      </section>
+
+      <FeaturedPosters />
 
       {/* Insights preview */}
       <section className="border-t border-neutral-200 bg-neutral-50 py-20">
@@ -133,9 +147,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
         <FadeIn className="flex items-end justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-accent-600">
-              Live
-            </p>
+            <LivePill />
             <h2 className="mt-2 font-serif text-3xl font-semibold text-primary-900 sm:text-4xl">
               News Pulse
             </h2>
