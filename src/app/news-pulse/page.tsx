@@ -7,19 +7,23 @@ import { SITE } from "@/lib/site-data";
 
 export const metadata: Metadata = {
   title: "News Pulse",
-  description: "National and international political headlines, aggregated live.",
+  description:
+    "Political headlines for Andhra Pradesh, Telangana, India and the world — aggregated live.",
 };
 
 function PanelSkeleton() {
   return (
-    <div className="grid gap-10 md:grid-cols-2">
-      {[0, 1].map((col) => (
-        <div key={col} className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 animate-pulse rounded-md bg-neutral-100" />
-          ))}
-        </div>
-      ))}
+    <div>
+      <div className="flex gap-2 border-b border-neutral-200 pb-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-9 w-32 animate-pulse rounded-full bg-neutral-100" />
+        ))}
+      </div>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="aspect-[4/3] animate-pulse rounded-lg bg-neutral-100" />
+        ))}
+      </div>
     </div>
   );
 }
@@ -33,8 +37,8 @@ export default function NewsPulsePage() {
             <LivePill light />
             <h1 className="mt-3 font-serif text-4xl font-semibold sm:text-5xl">News Pulse</h1>
             <p className="mt-4 text-neutral-300">
-              National and international political headlines, refreshed automatically every 30
-              minutes.
+              Political headlines for Andhra Pradesh, Telangana, India and the world — refreshed
+              automatically every 30 minutes.
             </p>
           </FadeIn>
         </div>
@@ -45,8 +49,10 @@ export default function NewsPulsePage() {
           <NewsPulsePanel />
         </Suspense>
         <p className="mt-10 text-xs text-neutral-400">
-          Headlines link out to the original publisher. {SITE.legalName} does not host or claim
-          rights to third-party reporting shown here.
+          Political relevance is determined by an automated keyword filter and may occasionally
+          miss or misclassify a story. Headlines link out to the original publisher — thumbnail
+          images are the publisher's own, shown as a preview only. {SITE.legalName} does not host
+          or claim rights to third-party reporting shown here.
         </p>
       </section>
     </>

@@ -1,26 +1,34 @@
-export type NewsRegion = "national" | "international";
+// A "pool" is what a feed inherently covers. Regional pools are always political/local by
+// nature; "national" and "international" pools are broad general-news feeds that get run
+// through the political-keyword filter (see political-filter.ts) and then sorted into the
+// right region — so an "india" pool item mentioning Andhra Pradesh or Telangana lands in
+// that state's column instead of the general India one.
+export type FeedPool = "regional-ap" | "regional-telangana" | "national" | "international";
 
 export interface FeedSource {
   id: string;
   name: string;
   url: string;
-  region: NewsRegion;
+  pool: FeedPool;
 }
 
-// Verified resolving (HTTP 200, valid RSS/XML) on 2026-08-22. A few outlets named in the
-// original brief no longer expose public RSS or block automated fetches (Indian Express and
-// PIB India return 403; Reuters and AP News discontinued public RSS entirely) — swapped for
-// equally mainstream outlets in the same category so each column still ships 4-5 sources.
+// Verified resolving (HTTP 200, valid RSS/XML) on 2026-08-22. Indian Express, PIB India,
+// Reuters and AP News no longer expose a working public RSS feed (403 / discontinued) and were
+// dropped. CNN's world feed was removed after it started serving sponsored personal-finance
+// cards instead of news — France 24 replaced it, which also happens to publish inline article
+// images.
 export const FEED_SOURCES: FeedSource[] = [
-  // National
-  { id: "the-hindu", name: "The Hindu", url: "https://www.thehindu.com/news/national/feeder/default.rss", region: "national" },
-  { id: "ndtv", name: "NDTV", url: "https://feeds.feedburner.com/ndtvnews-india-news", region: "national" },
-  { id: "toi", name: "Times of India", url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms", region: "national" },
-  { id: "hindustan-times", name: "Hindustan Times", url: "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml", region: "national" },
-  { id: "india-today", name: "India Today", url: "https://www.indiatoday.in/rss/1206578", region: "national" },
-  // International
-  { id: "bbc-world", name: "BBC World", url: "http://feeds.bbci.co.uk/news/world/rss.xml", region: "international" },
-  { id: "al-jazeera", name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml", region: "international" },
-  { id: "guardian-world", name: "The Guardian World", url: "https://www.theguardian.com/world/rss", region: "international" },
-  { id: "cnn-world", name: "CNN World", url: "http://rss.cnn.com/rss/edition_world.rss", region: "international" },
+  // Regional — Andhra Pradesh & Telangana desks, always in scope for their column
+  { id: "hindu-ap", name: "The Hindu", url: "https://www.thehindu.com/news/national/andhra-pradesh/feeder/default.rss", pool: "regional-ap" },
+  { id: "hindu-telangana", name: "The Hindu", url: "https://www.thehindu.com/news/national/telangana/feeder/default.rss", pool: "regional-telangana" },
+  // National — filtered to political stories, then sorted into AP / Telangana / India
+  { id: "ndtv", name: "NDTV", url: "https://feeds.feedburner.com/ndtvnews-india-news", pool: "national" },
+  { id: "toi", name: "Times of India", url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms", pool: "national" },
+  { id: "hindustan-times", name: "Hindustan Times", url: "https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml", pool: "national" },
+  { id: "india-today", name: "India Today", url: "https://www.indiatoday.in/rss/1206578", pool: "national" },
+  // International — filtered to political stories
+  { id: "bbc-world", name: "BBC World", url: "http://feeds.bbci.co.uk/news/world/rss.xml", pool: "international" },
+  { id: "al-jazeera", name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml", pool: "international" },
+  { id: "guardian-world", name: "The Guardian World", url: "https://www.theguardian.com/world/rss", pool: "international" },
+  { id: "france24", name: "France 24", url: "https://www.france24.com/en/rss", pool: "international" },
 ];

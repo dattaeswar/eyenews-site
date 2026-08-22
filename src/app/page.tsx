@@ -5,7 +5,7 @@ import FeaturedPosters from "@/components/FeaturedPosters";
 import GalleryGrid from "@/components/GalleryGrid";
 import InsightCard from "@/components/InsightCard";
 import LivePill from "@/components/LivePill";
-import NewsPulsePanel from "@/components/NewsPulsePanel";
+import NewsPulsePreview from "@/components/NewsPulsePreview";
 import TiltLogo from "@/components/TiltLogo";
 import { getAllInsights } from "@/lib/insights";
 import { SERVICES, SITE } from "@/lib/site-data";
@@ -151,6 +151,9 @@ export default function Home() {
             <h2 className="mt-2 font-serif text-3xl font-semibold text-primary-900 sm:text-4xl">
               News Pulse
             </h2>
+            <p className="mt-1 text-sm text-neutral-500">
+              Political headlines — Andhra Pradesh, Telangana, India &amp; International
+            </p>
           </div>
           <Link
             href="/news-pulse"
@@ -160,8 +163,16 @@ export default function Home() {
           </Link>
         </FadeIn>
         <div className="mt-10">
-          <Suspense fallback={<p className="text-neutral-500">Loading headlines…</p>}>
-            <NewsPulsePanel limit={4} />
+          <Suspense
+            fallback={
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="aspect-[4/3] animate-pulse rounded-lg bg-neutral-100" />
+                ))}
+              </div>
+            }
+          >
+            <NewsPulsePreview />
           </Suspense>
         </div>
       </section>

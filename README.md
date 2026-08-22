@@ -29,9 +29,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Copy `.env.example` to `.env.local` and fill in what you have:
 
-- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` — optional. Get a free key at web3forms.com. Without it,
-  the Contact page form falls back to opening the visitor's email client instead of posting to
-  Web3Forms.
+- `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` — optional. Get a free key at web3forms.com, using the
+  inbox you want enquiries to land in. Without it, the Contact page form falls back to opening
+  the visitor's email client instead of posting to Web3Forms.
+- `NEXT_PUBLIC_WEB3FORMS_CAREERS_ACCESS_KEY` — optional, only if you want Careers applications
+  routed separately from Contact enquiries (own inbox/Sheet). Falls back to the key above.
+
+### Logging every enquiry to a Google Sheet
+
+Web3Forms has a built-in, free "Google Sheets" integration (their dashboard → your form →
+Integrations → connect Google Sheets) that appends every submission as a row, on top of the
+email it already sends. Turn that on once per access key and every Contact/Careers submission
+is both emailed *and* logged — no extra code here, and no separate database to maintain.
 
 ## Adding an Insights article
 
@@ -91,12 +100,39 @@ The "Field & campaign moments" section on the homepage reads from
 file path plus its intrinsic width/height (needed by `next/image` to avoid layout shift). To
 add a photo: drop the file in `public/gallery/` and add a matching entry to the `PHOTOS` array.
 
-## News Pulse sources
+## Careers page
 
-Feed list lives in [`src/lib/news/sources.ts`](src/lib/news/sources.ts). A few outlets named in
-the original brief (Indian Express, PIB India, Reuters, AP News) no longer expose a working
-public RSS feed as of 2026-08-22 and were swapped for equally mainstream outlets — see the
-comment at the top of that file.
+`/careers` uses [`CareersForm`](src/components/CareersForm.tsx) — same Web3Forms/`mailto:`
+pattern as Contact, plus an optional resume upload (Web3Forms supports file attachments via
+multipart form submission). `JOB_OPENINGS` in [`site-data.ts`](src/lib/site-data.ts) is empty by
+default (ships as a general "we're always open to applications" page); add entries there if you
+want specific listed roles.
+
+## News Pulse: sources, regions & political filtering
+
+News Pulse is now political-news-only, split into four tabs: Andhra Pradesh, Telangana, India,
+International.
+
+- **Sources** — [`src/lib/news/sources.ts`](src/lib/news/sources.ts). The Hindu's dedicated AP
+  and Telangana desks feed those two tabs directly; national feeds (NDTV, TOI, Hindustan Times,
+  India Today) and international feeds (BBC, Al Jazeera, Guardian, France 24) feed India and
+  International. A few outlets named in the original brief (Indian Express, PIB India, Reuters,
+  AP News) no longer expose a working public RSS feed as of 2026-08-22 and were swapped for
+  equally mainstream outlets. CNN's world feed was dropped after it started serving sponsored
+  personal-finance content instead of news.
+- **Political filtering** — [`src/lib/news/political-filter.ts`](src/lib/news/political-filter.ts)
+  is a plain keyword list (party names, government/election vocabulary, etc), not a trained
+  classifier. It's deliberately simple so you can tune it yourself — add or remove a string from
+  the arrays and redeploy. It will occasionally miss a political story that doesn't use any of
+  the listed keywords, or let through an edge case that does; there's no paid political-news API
+  behind this.
+- **State routing** — a national-feed item mentioning an AP or Telangana keyword (city names,
+  party names, leaders) is routed to that state's tab instead of the general India one; see
+  `AP_KEYWORDS` / `TELANGANA_KEYWORDS` in the same file.
+- **Article images** — pulled from each feed's own `media:content` / `media:thumbnail` /
+  `enclosure` tag (the same preview images Google News, Feedly, or Inshorts show) and hotlinked
+  directly, not rehosted. Items whose feed doesn't include an image (BBC, Al Jazeera, India
+  Today) get a tinted placeholder card instead of a broken image.
 
 ## Deploying
 

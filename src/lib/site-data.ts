@@ -99,6 +99,17 @@ export const SERVICES: Service[] = [
 export const CONTACT = {
   primaryEmail: FOUNDERS[0].email,
   primaryPhone: FOUNDERS[0].phone,
-  whatsappNumber: "919440728445", // PK — Founder & MD, in international format for wa.me
+  whatsappNumber: "917416343465", // dedicated WhatsApp line, international format for wa.me
   whatsappMessage: "Hi, I'd like to get in touch regarding EYE NEWS INDIA.",
 };
+
+export interface JobOpening {
+  slug: string;
+  title: string;
+  location: string;
+  type: string;
+}
+
+// No open requisitions provided by the client — the Careers page ships with a general
+// "join the team" application form and an empty state here rather than invented listings.
+export const JOB_OPENINGS: JobOpening[] = [];

@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: "/practice-areas", label: "Practice Areas" },
   { href: "/insights", label: "Insights" },
   { href: "/news-pulse", label: "News Pulse" },
+  { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -42,7 +43,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-7">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -57,7 +58,7 @@ export default function Header() {
         </nav>
 
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-md text-primary-900 md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-md text-primary-900 lg:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -73,7 +74,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav className="border-t border-neutral-200 bg-white px-4 py-3 md:hidden">
+        <nav className="border-t border-neutral-200 bg-white px-4 py-3 lg:hidden">
           <ul className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>

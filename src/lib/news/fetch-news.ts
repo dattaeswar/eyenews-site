@@ -1,5 +1,6 @@
 import Parser from "rss-parser";
-import { FEED_SOURCES, type NewsRegion } from "./sources";
+import { isPolitical, matchesAndhraPradesh, matchesTelangana } from "./political-filter";
+import { FEED_SOURCES, type FeedPool } from "./sources";
 
 export interface NewsItem {
   title: string;
@@ -7,13 +8,35 @@ export interface NewsItem {
   snippet: string;
   source: string;
   pubDate: string; // ISO string
+  image?: string;
 }
 
-const REVALIDATE_SECONDS = 1800; // 30 min — Next.js data cache, no database needed
-const CAP_PER_REGION = 15;
+export type NewsRegion = "andhraPradesh" | "telangana" | "india" | "international";
 
-const parser = new Parser({
+const REVALIDATE_SECONDS = 1800; // 30 min — Next.js data cache, no database needed
+const CAP_PER_REGION = 12;
+
+type RawFeedItem = {
+  title?: string;
+  link?: string;
+  contentSnippet?: string;
+  content?: string;
+  summary?: string;
+  isoDate?: string;
+  pubDate?: string;
+  enclosure?: { url?: string };
+  mediaThumbnail?: { $?: { url?: string } };
+  mediaContent?: { $?: { url?: string; medium?: string } }[];
+};
+
+const parser: Parser<unknown, RawFeedItem> = new Parser({
   headers: { "User-Agent": "Mozilla/5.0 (compatible; EyeNewsIndiaBot/1.0)" },
+  customFields: {
+    item: [
+      ["media:content", "mediaContent", { keepArray: true }],
+      ["media:thumbnail", "mediaThumbnail"],
+    ],
+  },
 });
 
 function stripHtml(input: string | undefined): string {
@@ -27,6 +50,13 @@ function stripHtml(input: string | undefined): string {
 function truncate(input: string, max = 160): string {
   if (input.length <= max) return input;
   return input.slice(0, max).replace(/\s+\S*$/, "") + "…";
+}
+
+function extractImage(item: RawFeedItem): string | undefined {
+  if (item.enclosure?.url) return item.enclosure.url;
+  if (item.mediaThumbnail?.$?.url) return item.mediaThumbnail.$.url;
+  const withImage = item.mediaContent?.find((m) => m.$?.url);
+  return withImage?.$?.url;
 }
 
 async function fetchOneFeed(source: (typeof FEED_SOURCES)[number]): Promise<NewsItem[]> {
@@ -46,34 +76,62 @@ async function fetchOneFeed(source: (typeof FEED_SOURCES)[number]): Promise<News
       snippet: truncate(stripHtml(item.contentSnippet || item.content || item.summary)),
       source: source.name,
       pubDate: item.isoDate || item.pubDate || new Date().toISOString(),
+      image: extractImage(item),
     }));
 }
 
-async function fetchRegion(region: NewsRegion): Promise<NewsItem[]> {
-  const sources = FEED_SOURCES.filter((s) => s.region === region);
-  const results = await Promise.allSettled(sources.map(fetchOneFeed));
-
-  const items: NewsItem[] = [];
-  for (const result of results) {
-    if (result.status === "fulfilled") items.push(...result.value);
-    // A single failed source is swallowed here so the rest of the panel still renders.
-  }
-
+function dedupeSortCap(items: NewsItem[]): NewsItem[] {
   const seen = new Set<string>();
   const deduped = items.filter((item) => {
     if (seen.has(item.link)) return false;
     seen.add(item.link);
     return true;
   });
-
   deduped.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
   return deduped.slice(0, CAP_PER_REGION);
 }
 
-export async function getNewsPulse(): Promise<{ national: NewsItem[]; international: NewsItem[] }> {
-  const [national, international] = await Promise.all([
-    fetchRegion("national"),
-    fetchRegion("international"),
-  ]);
-  return { national, international };
+export async function getNewsPulse(): Promise<Record<NewsRegion, NewsItem[]>> {
+  const results = await Promise.allSettled(
+    FEED_SOURCES.map(async (source) => ({
+      pool: source.pool as FeedPool,
+      items: await fetchOneFeed(source),
+    })),
+  );
+
+  const buckets: Record<NewsRegion, NewsItem[]> = {
+    andhraPradesh: [],
+    telangana: [],
+    india: [],
+    international: [],
+  };
+
+  for (const result of results) {
+    if (result.status !== "fulfilled") continue; // a single failed source shouldn't blank the panel
+    const { pool, items } = result.value;
+
+    for (const item of items) {
+      const text = `${item.title} ${item.snippet}`;
+
+      if (pool === "regional-ap") {
+        if (isPolitical(text)) buckets.andhraPradesh.push(item);
+      } else if (pool === "regional-telangana") {
+        if (isPolitical(text)) buckets.telangana.push(item);
+      } else if (pool === "national") {
+        if (!isPolitical(text)) continue;
+        if (matchesAndhraPradesh(text)) buckets.andhraPradesh.push(item);
+        else if (matchesTelangana(text)) buckets.telangana.push(item);
+        else buckets.india.push(item);
+      } else if (pool === "international") {
+        if (isPolitical(text)) buckets.international.push(item);
+      }
+    }
+  }
+
+  return {
+    andhraPradesh: dedupeSortCap(buckets.andhraPradesh),
+    telangana: dedupeSortCap(buckets.telangana),
+    india: dedupeSortCap(buckets.india),
+    international: dedupeSortCap(buckets.international),
+  };
 }
