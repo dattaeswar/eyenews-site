@@ -1,0 +1,23 @@
+name: Warm News Pulse cache
+
+# News Pulse uses Next.js ISR (next: { revalidate: 1800 }) with no database and no
+# server-side cron — see README.md. That means the RSS data only refreshes when a
+# real visitor's request happens to land after the 30-minute cache window has
+# expired. On a low-traffic page that can mean the content sits unchanged for
+# hours. This workflow pings the page on a schedule so Vercel's
+# stale-while-revalidate kicks in regardless of visitor traffic, keeping the
+# cache warm and fresh for whoever shows up next.
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping News Pulse
+        run: |
+          curl -fsS -D - -o /dev/null "https://eyenews-site.vercel.app/news-pulse" \
+            | grep -iE "^(HTTP|age|x-vercel-cache):"

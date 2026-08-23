@@ -12,7 +12,10 @@ content, live RSS aggregation, no database.
 - Content: MDX files in [`content/insights/`](content/insights) — no CMS, no database
 - Framer Motion for the intro animation and section reveals
 - News Pulse: `rss-parser` + Next's built-in data cache (`next: { revalidate: 1800 }`) — no
-  database, no cron job
+  database. A free GitHub Actions workflow
+  ([`.github/workflows/warm-news-pulse.yml`](.github/workflows/warm-news-pulse.yml)) pings the
+  page every 20 minutes so the ISR cache refreshes on a schedule instead of only when a visitor
+  happens to land after it goes stale
 - Contact form: [Web3Forms](https://web3forms.com) (free, no backend) with a `mailto:` fallback
   when no access key is configured
 
