@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   description: `The founders and philosophy behind ${SITE.legalName} — ${SITE.tagline}`,
 };
 
+const PRESS_PHOTOS = [
+  { src: "/about/press-mic-1.jpg", width: 1280, height: 958, alt: "EYE-NEWS INDIAN TIMES branded press mic flag" },
+  { src: "/about/press-mic-2.jpg", width: 1280, height: 954, alt: "EYE-NEWS INDIAN TIMES branded press mic flag, close up" },
+  { src: "/about/press-mic-3.jpg", width: 1434, height: 1600, alt: "EYE-NEWS INDIAN TIMES branded press mic flag on set" },
+];
+
 export default function AboutPage() {
   return (
     <>
@@ -38,6 +44,33 @@ export default function AboutPage() {
             realities of public life is where every effective campaign has to start.
           </p>
         </FadeIn>
+      </section>
+
+      <section className="border-t border-neutral-200 py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <FadeIn>
+            <p className="text-sm font-semibold uppercase tracking-wide text-accent-600">
+              On the ground, on air
+            </p>
+            <h2 className="mt-2 font-serif text-3xl font-semibold text-primary-900">
+              Wherever the story is, we&apos;re there to cover it
+            </h2>
+          </FadeIn>
+          <div className="mt-10 grid gap-5 sm:grid-cols-3">
+            {PRESS_PHOTOS.map((photo) => (
+              <div key={photo.src} className="overflow-hidden rounded-lg">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  width={photo.width}
+                  height={photo.height}
+                  sizes="(min-width: 640px) 32vw, 90vw"
+                  className="h-64 w-full object-cover transition duration-500 hover:scale-105 sm:h-72"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       <section className="border-t border-neutral-200 bg-neutral-50 py-16 sm:py-20">

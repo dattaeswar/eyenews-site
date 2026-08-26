@@ -42,7 +42,14 @@ export default function ContactPage() {
             </div>
             <div className="border-t border-neutral-200 pt-4">
               <p className="text-sm text-neutral-500">Web</p>
-              <p className="text-sm font-medium text-neutral-800">{SITE.domain}</p>
+              <a
+                href={SITE.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-primary-700 hover:underline"
+              >
+                {SITE.domain}
+              </a>
             </div>
             <a
               href={`https://wa.me/${CONTACT.whatsappNumber}?text=${encodeURIComponent(CONTACT.whatsappMessage)}`}

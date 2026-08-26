@@ -6,8 +6,8 @@ export const SITE = {
   legalName: "EYE NEWS INDIA",
   parentEntity: "EYE-PAC INDIA CONSULTING PRIVATE LIMITED",
   tagline: "Truth. Insight. Impact.",
-  domain: "eye-news.in",
-  url: "https://eye-news.in",
+  domain: "eyes-news.in",
+  url: "https://eyes-news.in",
 };
 
 export interface Founder {
@@ -112,8 +112,8 @@ export const SERVICES: Service[] = [
 ];
 
 export const CONTACT = {
-  primaryEmail: "info@eyenewsindia.com",
-  primaryPhone: "8800000000", // official company phone line
+  primaryEmail: "eyenewsindiaa@gmail.com",
+  primaryPhone: "7416343465", // official company phone line
   whatsappNumber: "917416343465", // dedicated WhatsApp line, international format for wa.me
   whatsappMessage: "Hi, I'd like to get in touch regarding EYE NEWS INDIA.",
 };
