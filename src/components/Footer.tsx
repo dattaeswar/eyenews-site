@@ -18,6 +18,7 @@ export default function Footer() {
             <p className="text-sm font-semibold uppercase tracking-wide text-neutral-200">Explore</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li><Link href="/about" className="hover:text-white">About</Link></li>
+              <li><Link href="/info" className="hover:text-white">Info</Link></li>
               <li><Link href="/practice-areas" className="hover:text-white">Practice Areas</Link></li>
               <li><Link href="/insights" className="hover:text-white">Insights</Link></li>
               <li><Link href="/news-pulse" className="hover:text-white">News Pulse</Link></li>
@@ -55,8 +56,19 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-white/10 pt-6 text-xs text-neutral-500">
-          © {year} {SITE.legalName}. All rights reserved.
+        <div className="mt-10 border-t border-white/10 pt-6">
+          <div className="mb-4 flex gap-4">
+            <a href="https://instagram.com/eyenewsindia" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-white transition">Instagram</a>
+            <a href="https://youtube.com/eyenewsindia" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-white transition">YouTube</a>
+            <a href="https://facebook.com/eyenewsindia" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-white transition">Facebook</a>
+            <a href="https://twitter.com/eyenewsindia" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-white transition">Twitter</a>
+          </div>
+          <p className="text-xs text-neutral-500">
+            © {year} {SITE.legalName}. All rights reserved.
+          </p>
+          <p className="mt-3 text-xs text-neutral-600 opacity-60">
+            Website Designed & Developed by <a href="https://claudecode.ai" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-500">Claude Code</a>
+          </p>
         </div>
       </div>
     </footer>

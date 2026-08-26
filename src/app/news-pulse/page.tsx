@@ -8,7 +8,7 @@ import { SITE } from "@/lib/site-data";
 export const metadata: Metadata = {
   title: "News Pulse",
   description:
-    "Political headlines for Andhra Pradesh, Telangana, India and the world — aggregated live.",
+    "Political headlines for Andhra Pradesh, Telangana, Bihar, Delhi, India and the world — aggregated live.",
 };
 
 function PanelSkeleton() {
@@ -37,7 +37,7 @@ export default function NewsPulsePage() {
             <LivePill light />
             <h1 className="mt-3 font-serif text-4xl font-semibold sm:text-5xl">News Pulse</h1>
             <p className="mt-4 text-neutral-300">
-              Political headlines for Andhra Pradesh, Telangana, India and the world — refreshed
+              Political headlines for Andhra Pradesh, Telangana, Bihar, Delhi, India and the world — refreshed
               automatically every 30 minutes.
             </p>
           </FadeIn>
@@ -51,7 +51,7 @@ export default function NewsPulsePage() {
         <p className="mt-10 text-xs text-neutral-400">
           Political relevance is determined by an automated keyword filter and may occasionally
           miss or misclassify a story. Headlines link out to the original publisher — thumbnail
-          images are the publisher's own, shown as a preview only. {SITE.legalName} does not host
+          images are the publisher&apos;s own, shown as a preview only. {SITE.legalName} does not host
           or claim rights to third-party reporting shown here.
         </p>
       </section>

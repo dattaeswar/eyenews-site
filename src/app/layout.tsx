@@ -4,7 +4,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppFab from "@/components/WhatsAppFab";
-import IntroAnimation from "@/components/IntroAnimation";
 import { SITE } from "@/lib/site-data";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -43,7 +42,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${sourceSerif.variable}`}>
       <body className="flex min-h-screen flex-col font-sans antialiased">
-        <IntroAnimation />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

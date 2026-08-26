@@ -117,7 +117,7 @@ export default function CareersForm() {
       </div>
       <div>
         <label htmlFor="c-role" className="block text-sm font-medium text-neutral-800">
-          Area you'd like to join <span className="text-neutral-400">(optional)</span>
+          Area you&apos;d like to join <span className="text-neutral-400">(optional)</span>
         </label>
         <input
           id="c-role"

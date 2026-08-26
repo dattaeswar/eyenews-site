@@ -22,7 +22,7 @@ export default function CareersPage() {
             </h1>
             <p className="mt-4 text-neutral-300">
               We work at the intersection of grassroots intelligence, political strategy, media
-              and technology. If that's where you want to build your career, we'd like to hear
+              and technology. If that&apos;s where you want to build your career, we&apos;d like to hear
               from you.
             </p>
           </FadeIn>
@@ -34,7 +34,7 @@ export default function CareersPage() {
           <FadeIn className="mb-12 rounded-lg border border-dashed border-neutral-300 p-8 text-center">
             <p className="text-neutral-600">
               There are no specific openings listed right now — we still welcome applications
-              from people who want to be part of this team. Tell us where you'd fit in below.
+              from people who want to be part of this team. Tell us where you&apos;d fit in below.
             </p>
           </FadeIn>
         ) : (

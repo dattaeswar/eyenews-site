@@ -7,6 +7,8 @@ import type { NewsItem, NewsRegion } from "@/lib/news/fetch-news";
 const REGIONS: { key: NewsRegion; label: string; accent: string }[] = [
   { key: "andhraPradesh", label: "Andhra Pradesh", accent: "bg-saffron" },
   { key: "telangana", label: "Telangana", accent: "bg-flagGreen" },
+  { key: "bihar", label: "Bihar", accent: "bg-orange-500" },
+  { key: "delhi", label: "Delhi", accent: "bg-red-500" },
   { key: "india", label: "India", accent: "bg-primary-600" },
   { key: "international", label: "International", accent: "bg-accent-600" },
 ];

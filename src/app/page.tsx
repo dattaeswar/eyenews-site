@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import FadeIn from "@/components/FadeIn";
 import FeaturedPosters from "@/components/FeaturedPosters";
-import GalleryGrid from "@/components/GalleryGrid";
 import InsightCard from "@/components/InsightCard";
 import LivePill from "@/components/LivePill";
 import NewsPulsePreview from "@/components/NewsPulsePreview";
@@ -85,23 +84,6 @@ export default function Home() {
           >
             View all practice areas →
           </Link>
-        </div>
-      </section>
-
-      {/* Gallery */}
-      <section className="border-t border-neutral-200 py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <FadeIn>
-            <p className="text-sm font-semibold uppercase tracking-wide text-accent-600">
-              On the ground
-            </p>
-            <h2 className="mt-2 font-serif text-3xl font-semibold text-primary-900 sm:text-4xl">
-              Field &amp; campaign moments
-            </h2>
-          </FadeIn>
-          <div className="mt-10">
-            <GalleryGrid />
-          </div>
         </div>
       </section>
 

@@ -3,11 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SITE } from "@/lib/site-data";
 
 const NAV_LINKS = [
   { href: "/about", label: "About" },
+  { href: "/info", label: "Info" },
   { href: "/practice-areas", label: "Practice Areas" },
   { href: "/insights", label: "Insights" },
   { href: "/news-pulse", label: "News Pulse" },
@@ -18,10 +19,6 @@ const NAV_LINKS = [
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-neutral-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
@@ -80,6 +77,7 @@ export default function Header() {
               <li key={link.href}>
                 <Link
                   href={link.href}
+                  onClick={() => setOpen(false)}
                   className={`block rounded-md px-3 py-2.5 text-base font-medium ${
                     pathname === link.href
                       ? "bg-primary-50 text-accent-600"

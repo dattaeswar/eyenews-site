@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
 import FadeIn from "@/components/FadeIn";
-import { CONTACT, FOUNDERS, SITE } from "@/lib/site-data";
+import { CONTACT, SITE } from "@/lib/site-data";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -28,18 +28,18 @@ export default function ContactPage() {
             Reach us directly
           </h2>
           <div className="mt-6 space-y-6">
-            {FOUNDERS.map((f) => (
-              <div key={f.slug}>
-                <p className="font-semibold text-neutral-900">{f.name}</p>
-                <p className="text-sm text-neutral-500">{f.title}</p>
-                <a href={`mailto:${f.email}`} className="mt-1 block text-sm text-primary-700 hover:underline">
-                  {f.email}
-                </a>
-                <a href={`tel:+91${f.phone}`} className="block text-sm text-primary-700 hover:underline">
-                  +91 {f.phone}
-                </a>
-              </div>
-            ))}
+            <div>
+              <p className="text-sm text-neutral-500">Email</p>
+              <a href={`mailto:${CONTACT.primaryEmail}`} className="mt-1 block text-sm font-semibold text-primary-700 hover:underline">
+                {CONTACT.primaryEmail}
+              </a>
+            </div>
+            <div>
+              <p className="text-sm text-neutral-500">Phone</p>
+              <a href={`tel:+91${CONTACT.primaryPhone}`} className="block text-sm font-semibold text-primary-700 hover:underline">
+                +91 {CONTACT.primaryPhone}
+              </a>
+            </div>
             <div className="border-t border-neutral-200 pt-4">
               <p className="text-sm text-neutral-500">Web</p>
               <p className="text-sm font-medium text-neutral-800">{SITE.domain}</p>

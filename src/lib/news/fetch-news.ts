@@ -11,7 +11,7 @@ export interface NewsItem {
   image?: string;
 }
 
-export type NewsRegion = "andhraPradesh" | "telangana" | "india" | "international";
+export type NewsRegion = "andhraPradesh" | "telangana" | "bihar" | "delhi" | "india" | "international";
 
 const REVALIDATE_SECONDS = 1800; // 30 min — Next.js data cache, no database needed
 const CAP_PER_REGION = 12;
@@ -102,6 +102,8 @@ export async function getNewsPulse(): Promise<Record<NewsRegion, NewsItem[]>> {
   const buckets: Record<NewsRegion, NewsItem[]> = {
     andhraPradesh: [],
     telangana: [],
+    bihar: [],
+    delhi: [],
     india: [],
     international: [],
   };
@@ -131,6 +133,8 @@ export async function getNewsPulse(): Promise<Record<NewsRegion, NewsItem[]>> {
   return {
     andhraPradesh: dedupeSortCap(buckets.andhraPradesh),
     telangana: dedupeSortCap(buckets.telangana),
+    bihar: dedupeSortCap(buckets.bihar),
+    delhi: dedupeSortCap(buckets.delhi),
     india: dedupeSortCap(buckets.india),
     international: dedupeSortCap(buckets.international),
   };
