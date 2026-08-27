@@ -100,20 +100,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-6 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs text-neutral-500">
-              © {year} {SITE.legalName}. All rights reserved.
-            </p>
-            <p className="mt-3 text-xs text-neutral-600 opacity-60">
-              Website Designed & Developed by{" "}
-              <a href="https://claudecode.ai" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-500">
-                Claude Code
-              </a>
-            </p>
-          </div>
-
-          <div className="flex gap-3">
+        <div className="mt-10 border-t border-white/10 pt-8">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-center sm:gap-6">
             {SOCIAL_LINKS.map((social) => (
               <a
                 key={social.label}
@@ -121,23 +109,28 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={social.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-neutral-400 transition hover:border-accent-400/50 hover:text-accent-400"
+                className="flex h-14 w-14 flex-1 basis-[calc(25%-0.75rem)] items-center justify-center rounded-2xl border border-white/10 text-neutral-400 transition hover:border-accent-400/60 hover:bg-white/5 hover:text-accent-400 sm:h-16 sm:w-16 sm:flex-none sm:basis-auto"
               >
                 <svg
-                  width="16"
-                  height="16"
+                  width="26"
+                  height="26"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="1.75"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className="h-6 w-6 sm:h-7 sm:w-7"
                 >
                   {social.icon}
                 </svg>
               </a>
             ))}
           </div>
+
+          <p className="mt-8 text-center text-xs text-neutral-500">
+            © {year} {SITE.legalName}. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
