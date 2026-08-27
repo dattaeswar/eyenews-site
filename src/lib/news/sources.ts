@@ -3,7 +3,13 @@
 // through the political-keyword filter (see political-filter.ts) and then sorted into the
 // right region — so an "india" pool item mentioning Andhra Pradesh or Telangana lands in
 // that state's column instead of the general India one.
-export type FeedPool = "regional-ap" | "regional-telangana" | "national" | "international";
+export type FeedPool =
+  | "regional-ap"
+  | "regional-telangana"
+  | "regional-bihar"
+  | "regional-delhi"
+  | "national"
+  | "international";
 
 export interface FeedSource {
   id: string;
@@ -21,6 +27,14 @@ export const FEED_SOURCES: FeedSource[] = [
   // Regional — Andhra Pradesh & Telangana desks, always in scope for their column
   { id: "hindu-ap", name: "The Hindu", url: "https://www.thehindu.com/news/national/andhra-pradesh/feeder/default.rss", pool: "regional-ap" },
   { id: "hindu-telangana", name: "The Hindu", url: "https://www.thehindu.com/news/national/telangana/feeder/default.rss", pool: "regional-telangana" },
+  // Regional — Bihar & Delhi desks. These states have no equivalent to the AP/Telangana
+  // state feeder, so a dedicated city/state desk feed per outlet is used instead. Without
+  // these, the Bihar and Delhi columns depended entirely on the handful of "top stories"
+  // in the national feeds matching a narrow keyword list, so they were almost always empty.
+  { id: "hindu-bihar", name: "The Hindu", url: "https://www.thehindu.com/news/national/bihar/feeder/default.rss", pool: "regional-bihar" },
+  { id: "ht-patna", name: "Hindustan Times", url: "https://www.hindustantimes.com/feeds/rss/cities/patna-news/rssfeed.xml", pool: "regional-bihar" },
+  { id: "hindu-delhi", name: "The Hindu", url: "https://www.thehindu.com/news/cities/Delhi/feeder/default.rss", pool: "regional-delhi" },
+  { id: "ht-delhi", name: "Hindustan Times", url: "https://www.hindustantimes.com/feeds/rss/cities/delhi-news/rssfeed.xml", pool: "regional-delhi" },
   // National — filtered to political stories, then sorted into AP / Telangana / India
   { id: "ndtv", name: "NDTV", url: "https://feeds.feedburner.com/ndtvnews-india-news", pool: "national" },
   { id: "toi", name: "Times of India", url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms", pool: "national" },

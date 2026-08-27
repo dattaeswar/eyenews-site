@@ -39,6 +39,24 @@ const TELANGANA_KEYWORDS = [
   "kcr", "revanth reddy", "k.t. rama rao", "ktr", "harish rao",
 ];
 
+const BIHAR_KEYWORDS = [
+  "bihar", "patna", "nitish kumar", "tejashwi yadav", "rjd", "jd(u)", "jdu", "bihar assembly",
+  "bihar election", "bihar polls", "bihar cabinet", "bihar cm", "chief minister of bihar",
+  "lalu prasad", "lalu yadav", "bihar bjp", "bihar congress", "muzaffarpur", "gaya", "bhagalpur",
+  "darbhanga", "bihar yatra",
+];
+
+// Deliberately excludes bare "delhi" — most national-government stories carry a Delhi dateline
+// just because that's where Parliament/the PM sit, which would flood this bucket with stories
+// that have nothing to do with Delhi's own state government. Only match Delhi-state-specific terms.
+const DELHI_KEYWORDS = [
+  "delhi assembly", "delhi cm", "delhi chief minister", "chief minister of delhi",
+  "delhi government", "delhi cabinet", "mcd", "municipal corporation of delhi",
+  "delhi lieutenant governor", "lieutenant governor of delhi", "delhi l-g", "delhi lg",
+  "delhi polls", "delhi election", "delhi bjp", "delhi congress", "delhi aap",
+  "aam aadmi party", "kejriwal", "atishi", "vk saxena", "v.k. saxena", "new delhi municipal",
+];
+
 function normalize(text: string): string {
   return ` ${text.toLowerCase()} `;
 }
@@ -56,4 +74,14 @@ export function matchesAndhraPradesh(text: string): boolean {
 export function matchesTelangana(text: string): boolean {
   const t = normalize(text);
   return TELANGANA_KEYWORDS.some((k) => t.includes(k));
+}
+
+export function matchesBihar(text: string): boolean {
+  const t = normalize(text);
+  return BIHAR_KEYWORDS.some((k) => t.includes(k));
+}
+
+export function matchesDelhi(text: string): boolean {
+  const t = normalize(text);
+  return DELHI_KEYWORDS.some((k) => t.includes(k));
 }

@@ -1,5 +1,5 @@
 import Parser from "rss-parser";
-import { isPolitical, matchesAndhraPradesh, matchesTelangana } from "./political-filter";
+import { isPolitical, matchesAndhraPradesh, matchesBihar, matchesDelhi, matchesTelangana } from "./political-filter";
 import { FEED_SOURCES, type FeedPool } from "./sources";
 
 export interface NewsItem {
@@ -59,10 +59,13 @@ function extractImage(item: RawFeedItem): string | undefined {
   return withImage?.$?.url;
 }
 
+const FETCH_TIMEOUT_MS = 8000; // one hung/slow source must never freeze the whole panel
+
 async function fetchOneFeed(source: (typeof FEED_SOURCES)[number]): Promise<NewsItem[]> {
   const res = await fetch(source.url, {
     next: { revalidate: REVALIDATE_SECONDS },
     headers: { "User-Agent": "Mozilla/5.0 (compatible; EyeNewsIndiaBot/1.0)" },
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   if (!res.ok) throw new Error(`${source.name} responded ${res.status}`);
   const xml = await res.text();
@@ -119,10 +122,16 @@ export async function getNewsPulse(): Promise<Record<NewsRegion, NewsItem[]>> {
         if (isPolitical(text)) buckets.andhraPradesh.push(item);
       } else if (pool === "regional-telangana") {
         if (isPolitical(text)) buckets.telangana.push(item);
+      } else if (pool === "regional-bihar") {
+        if (isPolitical(text) || matchesBihar(text)) buckets.bihar.push(item);
+      } else if (pool === "regional-delhi") {
+        if (isPolitical(text) || matchesDelhi(text)) buckets.delhi.push(item);
       } else if (pool === "national") {
         if (!isPolitical(text)) continue;
         if (matchesAndhraPradesh(text)) buckets.andhraPradesh.push(item);
         else if (matchesTelangana(text)) buckets.telangana.push(item);
+        else if (matchesBihar(text)) buckets.bihar.push(item);
+        else if (matchesDelhi(text)) buckets.delhi.push(item);
         else buckets.india.push(item);
       } else if (pool === "international") {
         if (isPolitical(text)) buckets.international.push(item);

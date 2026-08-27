@@ -113,15 +113,19 @@ want specific listed roles.
 
 ## News Pulse: sources, regions & political filtering
 
-News Pulse is now political-news-only, split into four tabs: Andhra Pradesh, Telangana, India,
-International.
+News Pulse is political-news-only, split into six tabs: Andhra Pradesh, Telangana, Bihar,
+Delhi, India, International.
 
-- **Sources** — [`src/lib/news/sources.ts`](src/lib/news/sources.ts). The Hindu's dedicated AP
-  and Telangana desks feed those two tabs directly; national feeds (NDTV, TOI, Hindustan Times,
-  India Today) and international feeds (BBC, Al Jazeera, Guardian, France 24) feed India and
-  International. A few outlets named in the original brief (Indian Express, PIB India, Reuters,
-  AP News) no longer expose a working public RSS feed as of 2026-08-22 and were swapped for
-  equally mainstream outlets. CNN's world feed was dropped after it started serving sponsored
+- **Sources** — [`src/lib/news/sources.ts`](src/lib/news/sources.ts). Each state tab is fed by a
+  dedicated regional desk feed: The Hindu's AP and Telangana desks; The Hindu's Bihar desk plus
+  Hindustan Times Patna for Bihar; The Hindu's Delhi desk plus Hindustan Times Delhi for Delhi.
+  National feeds (NDTV, TOI, Hindustan Times, India Today) and international feeds (BBC, Al
+  Jazeera, Guardian, France 24) feed India and International. Bihar and Delhi previously had no
+  dedicated feed and depended entirely on the handful of national "top stories" matching a
+  narrow keyword list, so those two tabs were almost always empty — the regional feeds fix that.
+  A few outlets named in the original brief (Indian Express, PIB India, Reuters, AP News) no
+  longer expose a working public RSS feed as of 2026-08-22 and were swapped for equally
+  mainstream outlets. CNN's world feed was dropped after it started serving sponsored
   personal-finance content instead of news.
 - **Political filtering** — [`src/lib/news/political-filter.ts`](src/lib/news/political-filter.ts)
   is a plain keyword list (party names, government/election vocabulary, etc), not a trained
@@ -129,9 +133,11 @@ International.
   the arrays and redeploy. It will occasionally miss a political story that doesn't use any of
   the listed keywords, or let through an edge case that does; there's no paid political-news API
   behind this.
-- **State routing** — a national-feed item mentioning an AP or Telangana keyword (city names,
-  party names, leaders) is routed to that state's tab instead of the general India one; see
-  `AP_KEYWORDS` / `TELANGANA_KEYWORDS` in the same file.
+- **State routing** — a national-feed item mentioning an AP, Telangana, Bihar or Delhi keyword
+  (city names, party names, leaders) is routed to that state's tab instead of the general India
+  one; see `AP_KEYWORDS` / `TELANGANA_KEYWORDS` / `BIHAR_KEYWORDS` / `DELHI_KEYWORDS` in the same
+  file. `DELHI_KEYWORDS` deliberately omits a bare "delhi" match so national-government stories
+  with a routine Delhi dateline don't flood that tab.
 - **Article images** — pulled from each feed's own `media:content` / `media:thumbnail` /
   `enclosure` tag (the same preview images Google News, Feedly, or Inshorts show) and hotlinked
   directly, not rehosted. Items whose feed doesn't include an image (BBC, Al Jazeera, India
