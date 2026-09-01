@@ -1,0 +1,50 @@
+═════════════════════════════════════════════════════════════════════
+  EYE NEWS - QUICK START
+═════════════════════════════════════════════════════════════════════
+
+EVERYTHING IS BUILT. Just run this ONE command:
+
+COPY THIS AND PASTE INTO POWERSHELL:
+───────────────────────────────────────────────────────────────────
+
+cd "C:\Users\datta\Documents\eye news\claude stuff\eyenews-site"; .\quick-setup.ps1
+
+───────────────────────────────────────────────────────────────────
+
+Then follow the interactive prompts. The script will:
+  ✅ Verify your project
+  ✅ Ask for your Supabase key (copy from https://supabase.com)
+  ✅ Update your .env.local
+  ✅ Build and test everything
+  ✅ Show you next steps
+
+═════════════════════════════════════════════════════════════════════
+WHAT YOU NEED TO DO (Cannot automate):
+═════════════════════════════════════════════════════════════════════
+
+These require YOUR account access (I can't do them):
+
+1. SUPABASE (5 min)
+   └─ Go to: https://supabase.com
+   └─ Create bucket "article-thumbnails" (make it PUBLIC)
+   └─ Run SQL migration from: supabase/migrations/001_create_articles_schema.sql
+
+2. VERCEL (10 min)
+   └─ Go to: https://vercel.com
+   └─ Sign up with: eyenewsindiaa@gmail.com
+   └─ Import eyenews-site repo
+   └─ Add env variables and deploy
+
+3. DOMAIN (15 min)
+   └─ Go to your domain registrar (GoDaddy, etc.)
+   └─ Update nameservers to Vercel's nameservers
+   └─ Wait 24-48 hours for DNS
+
+═════════════════════════════════════════════════════════════════════
+
+Questions? See these guides in the project:
+  • EXECUTE_NOW.md (step-by-step with screenshots)
+  • SUPABASE_SETUP.md (detailed Supabase guide)
+  • DEPLOYMENT.md (domain + Vercel guide)
+
+═════════════════════════════════════════════════════════════════════
