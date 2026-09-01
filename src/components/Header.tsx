@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { href: "/news-pulse", label: "News Pulse" },
   { href: "/careers", label: "Careers" },
   { href: "/submit-article", label: "Submit Article" },
+  { href: "/admin", label: "Admin" },
   { href: "/contact", label: "Contact" },
 ];
 
