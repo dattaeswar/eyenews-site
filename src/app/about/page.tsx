@@ -84,7 +84,7 @@ export default function AboutPage() {
                     alt={founder.name}
                     width={200}
                     height={200}
-                    className="h-44 w-44 rounded-full border-4 border-white object-cover shadow-md sm:h-48 sm:w-48"
+                    className="h-44 w-44 rounded-full border-4 border-white object-cover object-top shadow-md sm:h-48 sm:w-48"
                   />
                 </div>
                 <div>

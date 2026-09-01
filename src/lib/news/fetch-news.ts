@@ -11,7 +11,15 @@ export interface NewsItem {
   image?: string;
 }
 
-export type NewsRegion = "andhraPradesh" | "telangana" | "bihar" | "delhi" | "india" | "international";
+export type NewsRegion =
+  | "andhraPradesh" | "telangana" | "bihar" | "delhi"
+  | "maharashtra" | "karnataka" | "tamilNadu" | "westBengal"
+  | "utarPradesh" | "rajasthan" | "gujarat" | "madhyaPradesh"
+  | "punjab" | "haryana" | "himachal" | "uttarakhand"
+  | "jharkhand" | "odisha" | "assam" | "kerala"
+  | "tripura" | "manipur" | "mizoram" | "nagaland"
+  | "goa" | "ladakh" | "sikkim" | "chandigarh"
+  | "puducherry" | "lakshadweep" | "india" | "international";
 
 const REVALIDATE_SECONDS = 1800; // 30 min — Next.js data cache, no database needed
 const CAP_PER_REGION = 12;
@@ -103,36 +111,67 @@ export async function getNewsPulse(): Promise<Record<NewsRegion, NewsItem[]>> {
   );
 
   const buckets: Record<NewsRegion, NewsItem[]> = {
-    andhraPradesh: [],
-    telangana: [],
-    bihar: [],
-    delhi: [],
-    india: [],
-    international: [],
+    andhraPradesh: [], telangana: [], bihar: [], delhi: [],
+    maharashtra: [], karnataka: [], tamilNadu: [], westBengal: [],
+    utarPradesh: [], rajasthan: [], gujarat: [], madhyaPradesh: [],
+    punjab: [], haryana: [], himachal: [], uttarakhand: [],
+    jharkhand: [], odisha: [], assam: [], kerala: [],
+    tripura: [], manipur: [], mizoram: [], nagaland: [],
+    goa: [], ladakh: [], sikkim: [], chandigarh: [],
+    puducherry: [], lakshadweep: [], india: [], international: [],
   };
 
   for (const result of results) {
-    if (result.status !== "fulfilled") continue; // a single failed source shouldn't blank the panel
+    if (result.status !== "fulfilled") continue;
     const { pool, items } = result.value;
 
     for (const item of items) {
       const text = `${item.title} ${item.snippet}`;
 
-      if (pool === "regional-ap") {
-        if (isPolitical(text)) buckets.andhraPradesh.push(item);
-      } else if (pool === "regional-telangana") {
-        if (isPolitical(text)) buckets.telangana.push(item);
-      } else if (pool === "regional-bihar") {
-        if (isPolitical(text) || matchesBihar(text)) buckets.bihar.push(item);
-      } else if (pool === "regional-delhi") {
-        if (isPolitical(text) || matchesDelhi(text)) buckets.delhi.push(item);
+      if (pool.startsWith("regional-")) {
+        if (isPolitical(text)) {
+          const regionMap: Record<string, NewsRegion> = {
+            "regional-ap": "andhraPradesh",
+            "regional-telangana": "telangana",
+            "regional-bihar": "bihar",
+            "regional-delhi": "delhi",
+            "regional-maharashtra": "maharashtra",
+            "regional-karnataka": "karnataka",
+            "regional-tamil-nadu": "tamilNadu",
+            "regional-west-bengal": "westBengal",
+            "regional-uttar-pradesh": "utarPradesh",
+            "regional-rajasthan": "rajasthan",
+            "regional-gujarat": "gujarat",
+            "regional-madhya-pradesh": "madhyaPradesh",
+            "regional-punjab": "punjab",
+            "regional-haryana": "haryana",
+            "regional-himachal": "himachal",
+            "regional-uttarakhand": "uttarakhand",
+            "regional-jharkhand": "jharkhand",
+            "regional-odisha": "odisha",
+            "regional-assam": "assam",
+            "regional-kerala": "kerala",
+            "regional-tripura": "tripura",
+            "regional-manipur": "manipur",
+            "regional-mizoram": "mizoram",
+            "regional-nagaland": "nagaland",
+            "regional-goa": "goa",
+            "regional-ladakh": "ladakh",
+            "regional-sikkim": "sikkim",
+            "regional-chandigarh": "chandigarh",
+            "regional-puducherry": "puducherry",
+          };
+          const region = regionMap[pool];
+          if (region) buckets[region].push(item);
+        }
       } else if (pool === "national") {
-        if (!isPolitical(text)) continue;
-        if (matchesAndhraPradesh(text)) buckets.andhraPradesh.push(item);
-        else if (matchesTelangana(text)) buckets.telangana.push(item);
-        else if (matchesBihar(text)) buckets.bihar.push(item);
-        else if (matchesDelhi(text)) buckets.delhi.push(item);
-        else buckets.india.push(item);
+        if (isPolitical(text)) {
+          if (matchesAndhraPradesh(text)) buckets.andhraPradesh.push(item);
+          else if (matchesTelangana(text)) buckets.telangana.push(item);
+          else if (matchesBihar(text)) buckets.bihar.push(item);
+          else if (matchesDelhi(text)) buckets.delhi.push(item);
+          else buckets.india.push(item);
+        }
       } else if (pool === "international") {
         if (isPolitical(text)) buckets.international.push(item);
       }
@@ -144,6 +183,32 @@ export async function getNewsPulse(): Promise<Record<NewsRegion, NewsItem[]>> {
     telangana: dedupeSortCap(buckets.telangana),
     bihar: dedupeSortCap(buckets.bihar),
     delhi: dedupeSortCap(buckets.delhi),
+    maharashtra: dedupeSortCap(buckets.maharashtra),
+    karnataka: dedupeSortCap(buckets.karnataka),
+    tamilNadu: dedupeSortCap(buckets.tamilNadu),
+    westBengal: dedupeSortCap(buckets.westBengal),
+    utarPradesh: dedupeSortCap(buckets.utarPradesh),
+    rajasthan: dedupeSortCap(buckets.rajasthan),
+    gujarat: dedupeSortCap(buckets.gujarat),
+    madhyaPradesh: dedupeSortCap(buckets.madhyaPradesh),
+    punjab: dedupeSortCap(buckets.punjab),
+    haryana: dedupeSortCap(buckets.haryana),
+    himachal: dedupeSortCap(buckets.himachal),
+    uttarakhand: dedupeSortCap(buckets.uttarakhand),
+    jharkhand: dedupeSortCap(buckets.jharkhand),
+    odisha: dedupeSortCap(buckets.odisha),
+    assam: dedupeSortCap(buckets.assam),
+    kerala: dedupeSortCap(buckets.kerala),
+    tripura: dedupeSortCap(buckets.tripura),
+    manipur: dedupeSortCap(buckets.manipur),
+    mizoram: dedupeSortCap(buckets.mizoram),
+    nagaland: dedupeSortCap(buckets.nagaland),
+    goa: dedupeSortCap(buckets.goa),
+    ladakh: dedupeSortCap(buckets.ladakh),
+    sikkim: dedupeSortCap(buckets.sikkim),
+    chandigarh: dedupeSortCap(buckets.chandigarh),
+    puducherry: dedupeSortCap(buckets.puducherry),
+    lakshadweep: dedupeSortCap(buckets.lakshadweep),
     india: dedupeSortCap(buckets.india),
     international: dedupeSortCap(buckets.international),
   };
