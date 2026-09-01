@@ -3,12 +3,16 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { THUMBNAIL_RULES, BODY_RULES } from '@/lib/articles';
+
+const GMAIL_RE = /^[^\s@]+@gmail\.com$/i;
 
 export default function SubmitArticle() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -26,34 +30,58 @@ export default function SubmitArticle() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const readImageSize = (file: File) =>
+    new Promise<{ width: number; height: number }>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      img.onerror = () => reject(new Error('Could not read the image file'));
+      img.src = URL.createObjectURL(file);
+    });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setError('');
+    setUploadingImage(true);
     try {
-      const fileName = `${Date.now()}-${file.name}`;
-      const { data, error: uploadError } = await supabase.storage
+      if (!THUMBNAIL_RULES.acceptedTypes.includes(file.type)) {
+        throw new Error('Thumbnail must be a JPG, PNG or WebP image');
+      }
+      if (file.size > THUMBNAIL_RULES.maxBytes) {
+        throw new Error(
+          `Thumbnail is ${(file.size / 1024 / 1024).toFixed(1)} MB — the limit is ${
+            THUMBNAIL_RULES.maxBytes / 1024 / 1024
+          } MB`
+        );
+      }
+
+      const { width, height } = await readImageSize(file);
+      if (width < THUMBNAIL_RULES.minWidth || height < THUMBNAIL_RULES.minHeight) {
+        throw new Error(
+          `Thumbnail is ${width}×${height}px — it must be at least ${THUMBNAIL_RULES.minWidth}×${THUMBNAIL_RULES.minHeight}px`
+        );
+      }
+
+      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const { error: uploadError } = await supabase.storage
         .from('article-thumbnails')
         .upload(fileName, file);
-
       if (uploadError) throw uploadError;
 
       const { data: publicUrlData } = supabase.storage
         .from('article-thumbnails')
         .getPublicUrl(fileName);
 
-      setFormData((prev) => ({
-        ...prev,
-        thumbnail_url: publicUrlData.publicUrl,
-      }));
+      setFormData((prev) => ({ ...prev, thumbnail_url: publicUrlData.publicUrl }));
     } catch (err) {
+      setFormData((prev) => ({ ...prev, thumbnail_url: '' }));
       setError(`Image upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -63,8 +91,8 @@ export default function SubmitArticle() {
     setError('');
 
     try {
-      if (!formData.author_email) {
-        throw new Error('Author email is required');
+      if (!GMAIL_RE.test(formData.author_email.trim())) {
+        throw new Error('Author email must be a valid @gmail.com address');
       }
 
       const today = new Date().toISOString().split('T')[0];
@@ -76,8 +104,15 @@ export default function SubmitArticle() {
         throw new Error('Title must be under 200 characters');
       }
 
-      if (formData.body.length > 50000) {
-        throw new Error('Article body must be under 50,000 characters');
+      if (formData.body.trim().length < BODY_RULES.min) {
+        throw new Error(`Article body must be at least ${BODY_RULES.min} characters`);
+      }
+      if (formData.body.length > BODY_RULES.max) {
+        throw new Error(`Article body must be under ${BODY_RULES.max.toLocaleString()} characters`);
+      }
+
+      if (!formData.thumbnail_url) {
+        throw new Error('Please upload a thumbnail image');
       }
 
       const tags = formData.tags
@@ -102,28 +137,21 @@ export default function SubmitArticle() {
         ])
         .select()
         .single();
-
       if (articleError) throw articleError;
 
       const { error: submissionError } = await supabase.from('submissions').insert([
-        {
-          article_id: article.id,
-          submitted_by_email: formData.author_email,
-        },
+        { article_id: article.id, submitted_by_email: formData.author_email.trim() },
       ]);
-
       if (submissionError) throw submissionError;
 
-      const { error: auditError } = await supabase.from('audit_logs').insert([
+      await supabase.from('audit_logs').insert([
         {
           article_id: article.id,
           action: 'article_submitted',
-          performed_by_email: formData.author_email,
+          performed_by_email: formData.author_email.trim(),
           notes: `Article "${formData.title}" submitted for review`,
         },
       ]);
-
-      if (auditError) throw auditError;
 
       setSuccess(true);
       setFormData({
@@ -137,7 +165,6 @@ export default function SubmitArticle() {
         publication_date: new Date().toISOString().split('T')[0],
         author_email: '',
       });
-
       setTimeout(() => router.push('/'), 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Submission failed');
@@ -146,17 +173,23 @@ export default function SubmitArticle() {
     }
   };
 
+  const emailValid = formData.author_email === '' || GMAIL_RE.test(formData.author_email.trim());
+  const bodyLen = formData.body.length;
+  const bodyOver = bodyLen > BODY_RULES.max;
+
   return (
     <div className="min-h-screen bg-white py-12 px-4">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8">Submit Your Article</h1>
+        <h1 className="text-4xl font-bold mb-2">Submit Your Article</h1>
+        <p className="text-sm text-gray-500 mb-8">
+          Submissions are reviewed by an editor before they appear in Insights.
+        </p>
 
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
             Article submitted successfully! Redirecting...
           </div>
         )}
-
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             {error}
@@ -165,15 +198,21 @@ export default function SubmitArticle() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Author Email</label>
+            <label className="block text-sm font-medium mb-2">Author Email (Gmail only)</label>
             <input
               type="email"
               name="author_email"
               value={formData.author_email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded"
+              placeholder="yourname@gmail.com"
+              className={`w-full px-4 py-2 border rounded ${
+                emailValid ? 'border-gray-300' : 'border-red-400'
+              }`}
             />
+            {!emailValid && (
+              <p className="text-xs text-red-600 mt-1">Must be a @gmail.com address</p>
+            )}
           </div>
 
           <div>
@@ -227,14 +266,32 @@ export default function SubmitArticle() {
 
           <div>
             <label className="block text-sm font-medium mb-2">Thumbnail Image</label>
+            <div className="text-xs text-gray-600 mb-2 rounded bg-gray-50 border border-gray-200 p-3 space-y-1">
+              <p>
+                <strong>Required size:</strong> {THUMBNAIL_RULES.recommendedWidth} ×{' '}
+                {THUMBNAIL_RULES.recommendedHeight} px (16:9 landscape)
+              </p>
+              <p>
+                <strong>Minimum:</strong> {THUMBNAIL_RULES.minWidth} × {THUMBNAIL_RULES.minHeight} px
+              </p>
+              <p>
+                <strong>Format:</strong> JPG, PNG or WebP • <strong>Max file size:</strong>{' '}
+                {THUMBNAIL_RULES.maxBytes / 1024 / 1024} MB
+              </p>
+            </div>
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               onChange={handleImageUpload}
               className="w-full px-4 py-2 border border-gray-300 rounded"
             />
+            {uploadingImage && <p className="text-xs text-gray-500 mt-1">Uploading…</p>}
             {formData.thumbnail_url && (
-              <img src={formData.thumbnail_url} alt="Thumbnail preview" className="mt-4 max-w-xs" />
+              <img
+                src={formData.thumbnail_url}
+                alt="Thumbnail preview"
+                className="mt-4 w-full max-w-md rounded border border-gray-200 aspect-video object-cover"
+              />
             )}
           </div>
 
@@ -245,12 +302,14 @@ export default function SubmitArticle() {
               value={formData.body}
               onChange={handleChange}
               required
-              maxLength={50000}
-              rows={10}
+              maxLength={BODY_RULES.max}
+              rows={12}
               className="w-full px-4 py-2 border border-gray-300 rounded font-mono text-sm"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              {formData.body.length}/50,000 characters (~{Math.round(formData.body.length / 5.5)} words)
+            <p className={`text-xs mt-1 ${bodyOver ? 'text-red-600' : 'text-gray-500'}`}>
+              {bodyLen.toLocaleString()} / {BODY_RULES.max.toLocaleString()} characters maximum
+              {' '}(~{Math.round(bodyLen / 5.5).toLocaleString()} words) • minimum{' '}
+              {BODY_RULES.min} characters
             </p>
           </div>
 
@@ -282,7 +341,7 @@ export default function SubmitArticle() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploadingImage}
             className="w-full bg-blue-600 text-white py-3 rounded font-medium hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? 'Submitting...' : 'Submit Article'}
