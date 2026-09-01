@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/insights", label: "Insights" },
   { href: "/news-pulse", label: "News Pulse" },
   { href: "/careers", label: "Careers" },
+  { href: "/submit-article", label: "Submit Article" },
   { href: "/contact", label: "Contact" },
 ];
 
