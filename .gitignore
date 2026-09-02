@@ -46,3 +46,8 @@ next-env.d.ts
 
 .vercel
 .env*
+deploy-to-vercel.sh
+
+# local deploy helper (contains admin password)
+deploy-eyenews.sh
+deploy-eyenews.ps1
